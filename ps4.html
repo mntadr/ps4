@@ -1,0 +1,81 @@
+ <html>
+ <head>
+ <title>JailbreakMe PS4 4.0x</title>
+ <meta name="viewport" content="user-scalable=1.0,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0">
+ <meta name="apple-mobile-web-app-capable" content="no">
+ <meta name="format-detection" content="telephone=no">
+ <link rel="apple-touch-icon" href="touch-icon-iphone.png">
+ <meta name="apple-mobile-web-app-title" content="JailbreakMe" />
+<style>
+ body {
+ overflow: hidden;
+ position: fixed;
+ position: relative;
+ }
+ h1{
+ overflow: hidden;
+ position: fixed;
+ position: absolute;
+ top: 40%;
+ left: 50%;
+ transform: translate(-50%, -50%);
+ }
+
+footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 40px;
+    width: 100%;
+    overflow:hidden;
+}
+
+ </style>
+</head>
+ <body>
+<script>
+    
+window.postexploit = function(p)
+{
+    document.getElementById("clck").style.display = 'none';
+
+    var hexdump = function(address, size) {
+        var ret = "\nHex Dump of 0x" + address + ": \n";
+        var addr_copy = address.add32(0);
+        for (var i = 0; i < size/8; i++)
+        {
+            var rd = p.read8(addr_copy.add32(i*8));
+            ret += "<a href='javascript:window.printdump(" + rd.low.toString() + ", " + rd.hi.toString() + ")'>0x" + rd.toString(16) + "</a>\n";
+        }
+        
+        return ret;
+    };
+    
+    var print = function(string) {
+        document.getElementById("console").innerHTML += string + "\n";
+    }
+    
+    window.printdump = function(a,b) {
+        print(hexdump(new int64(a,b), 96));
+    }
+    
+    print(" === exploit succeeded === ");
+    
+    
+    p.leakfcn = function(smashfcn) {
+        var smashobj = p.leakval(smashfcn);
+        var smashbase = p.read8(smashobj.add32(0x18));
+        return smashbase.add32(0x20);
+    }
+    
+    var fcnptr = p.read8(p.leakfcn(parseFloat));
+
+    print("leaked parseFloat at 0x" + fcnptr);
+}
+</script>
+<script src=expl.js></script>
+<center><h1 id=clck>loading</h1>by <a href='https://twitter.com/qwertyoruiopz'>qwertyoruiopz</a> - click go 3 times</center>
+    <pre id="console"></pre>
+</body>
+</html>
+
